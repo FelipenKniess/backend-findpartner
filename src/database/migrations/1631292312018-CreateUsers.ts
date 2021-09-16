@@ -8,15 +8,11 @@ export class CreateUsers1631292312018 implements MigrationInterface {
             name: 'users',
             columns: [
                 {
-                    name: 'codigo',
+                    name: 'id',
                     type: 'uuid',
                     isPrimary: true,
                     generationStrategy: 'uuid',
                     default: 'uuid_generate_v4()',
-                },
-                {
-                    name: 'nome',
-                    type: 'varchar',
                 },
                 {
                     name: 'email',
@@ -24,8 +20,31 @@ export class CreateUsers1631292312018 implements MigrationInterface {
                     isUnique: true
                 },
                 {
-                    name: 'senha',
+                    name: 'password',
                     type: 'varchar',
+                },
+                {
+                    name: 'name',
+                    type: 'varchar',
+                },
+                {
+                    name: 'type',
+                    type: 'int',
+                },
+                {
+                    name: 'avatar',
+                    type: 'varchar',
+                    isNullable: true
+                },
+                {
+                    name: 'description',
+                    type: 'varchar',
+                    isNullable: true
+                },
+                {
+                    name: 'telephone',
+                    type: 'varchar',
+                    isNullable: true
                 },
                 {
                     name: 'created_at',
@@ -43,6 +62,7 @@ export class CreateUsers1631292312018 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+      await queryRunner.dropTable('users');
     }
 
 }

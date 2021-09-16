@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import CreateUserService from '../services/CreateUserService';
 
 const usersRouter = Router();
 
@@ -10,18 +11,19 @@ interface User {
 
 usersRouter.post('/', async (request, response) => {
 
-    const {name, email, password} = request.body;
-    // const createUser = new CreateUserService();
+    const {type, name, email, password} = request.body;
+    const createUser = new CreateUserService();
 
-    // const newUser: User = await createUser.execute({
-    //     name,
-    //     email,
-    //     password
-    // });
+    const newUser: User = await createUser.execute({
+        name,
+        email,
+        password,
+        type
+    });
 
-    //delete newUser.password;
+    delete newUser.password;
 
-    response.json({ user: true});
+    response.json(newUser);
 });
 
 

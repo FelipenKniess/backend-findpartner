@@ -1,9 +1,10 @@
 ﻿import {Router} from 'express';
+import UserRoutes from './users.routes';
+import SessionsRouter from './sessions.routes';
 
 const routes = Router();
 
-routes.get('/', (request, response) => {
-    return response.json({teste: true});
-})
+routes.get('/users', UserRoutes);
+routes.get('/sessions', SessionsRouter);
 
 export default routes;

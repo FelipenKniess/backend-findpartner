@@ -6,16 +6,25 @@ class User {
     id: string;
 
     @Column()
-    name: string;
-
-    @Column()
     email: string;
 
     @Column()
     password: string;
 
     @Column()
+    name: string;
+
+    @Column()
+    type: number;
+
+    @Column()
     avatar: string;
+
+    @Column()
+    description: string;
+
+    @Column()
+    telephone: string;
 
     @CreateDateColumn()
     created_at: Date;
