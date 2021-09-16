@@ -1,7 +1,11 @@
-﻿import express, {Request, Response, NextFunction} from 'express';
+﻿import 'reflect-metadata';
+import 'express-async-errors';
+import express, {Request, Response, NextFunction} from 'express';
 import AppError from './errors/AppError';
 import Cors from 'cors';
+
 import Routes from './routes';
+import './database';
 
 const app = express();
 
@@ -25,6 +29,6 @@ app.use((err:Error, request: Request, response:Response, next:NextFunction) => {
     })
 });
 
-  app.listen(3333, () => {
-    console.log('Server started on port 3333');
+app.listen(3333, () => {
+  console.log('Server started on port 3333');
 })

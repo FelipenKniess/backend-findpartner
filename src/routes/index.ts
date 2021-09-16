@@ -4,7 +4,7 @@ import SessionsRouter from './sessions.routes';
 
 const routes = Router();
 
-routes.get('/users', UserRoutes);
-routes.get('/sessions', SessionsRouter);
+routes.use('/users', UserRoutes);
+routes.use('/sessions', SessionsRouter);
 
 export default routes;

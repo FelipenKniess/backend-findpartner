@@ -15,7 +15,7 @@ class CreateUserService {
         const userRepository = getRepository(User);
 
         const checkEmailExist = await userRepository.findOne({
-            where: { email}
+            where: {email}
         });
 
         if (checkEmailExist){

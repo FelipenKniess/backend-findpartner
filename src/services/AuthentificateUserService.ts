@@ -2,15 +2,15 @@ import { getRepository } from 'typeorm';
 import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 
-import User from '../models/user';
+import User from '../models/Users';
 import AuthConfig from './../config/auth';
 import appError from '../errors/AppError';
 
 interface Request {
     email: string,
-    password:string
+    password: string
 }
-3
+
 interface Response {
     user: User,
     token: String
