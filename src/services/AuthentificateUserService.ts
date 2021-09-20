@@ -25,13 +25,13 @@ class AuthenticateUserService {
         })
 
         if(!user){
-            throw new appError('username or password is incorrect');
-        }
+            throw new appError('Usuário ou senha está incorreto');
+          }
 
         const validatePassword = await compare(password, user.password);
 
         if(!validatePassword){
-            throw new appError('username or password is incorrect');
+          throw new appError('Usuário ou senha está incorreto');
         }
 
         const { secret, expiresIn } = AuthConfig.jwt;

@@ -19,7 +19,7 @@ class CreateUserService {
         });
 
         if (checkEmailExist){
-            throw new AppError('Email address already used.');
+            throw new AppError('Já existe uma conta com este email!');
         }
 
         const hashedPassword = await hash(password, 8);

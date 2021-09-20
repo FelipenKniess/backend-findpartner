@@ -3,7 +3,7 @@
   "host": "localhost",
   "port": 5423,
   "username": "postgres",
-  "password": "postgres",
+  "password": "docker",
   "database": "findpartner",
   "entities": [
       "./src/models/*.ts"
