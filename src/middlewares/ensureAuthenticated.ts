@@ -34,6 +34,6 @@ export default async function ensureAuthenticated(request: Request, response: Re
 
         return next();
     } catch{
-        throw new AppError('JWT token is invalid', 404);
+        throw new AppError('Token inválido!', 404);
     }
 }

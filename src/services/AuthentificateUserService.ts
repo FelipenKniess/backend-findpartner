@@ -21,12 +21,12 @@ class AuthenticateUserService {
         const userRepository = getRepository(User);
 
         const user = await userRepository.findOne({
-            where: {email}
+          where: {email}
         })
 
         if(!user){
-            throw new appError('Usuário ou senha está incorreto');
-          }
+          throw new appError('Usuário ou senha está incorreto');
+        }
 
         const validatePassword = await compare(password, user.password);
 

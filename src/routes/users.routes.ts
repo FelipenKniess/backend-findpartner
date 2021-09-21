@@ -1,11 +1,15 @@
 import { Router } from 'express';
+import multer from 'multer';
+import uploadConfig from '../config/upload';
 import CreateUserService from '../services/CreateUserService';
-import UpdateUserInfoRetail from '../services/UpdateUserInfoRetail';
+import UpdateUserInfoVarejista from '../services/UpdateUserInfoVarejista';
 import { getRepository } from 'typeorm';
+import AppError from '../errors/AppError';
 import User from '../models/Users';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 
 const usersRouter = Router();
+const upload = multer(uploadConfig);
 
 export interface UserData {
     name: String,
@@ -14,7 +18,7 @@ export interface UserData {
     type: Number
 }
 
-usersRouter.post('/create', async (request, response, next) => {
+usersRouter.post('/create', async (request, response) => {
 
     const {type, name, email, password} = request.body;
     const createUser = new CreateUserService();
@@ -31,25 +35,27 @@ usersRouter.post('/create', async (request, response, next) => {
     response.json(newUser);
 });
 
-usersRouter.put('/completeRegisterRetail', ensureAuthenticated, async (request, response, next) => {
-
+usersRouter.patch('/completeRegisterVarejista', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
     const {description, telephone} = request.body;
 
-    const updateUserRetail = new UpdateUserInfoRetail();
+    const updateUserInfoVarejista = new UpdateUserInfoVarejista();
 
-    updateUserRetail.execute({
+    const user = await updateUserInfoVarejista.execute({
       id: request.user.id,
       description,
-      telephone
+      telephone,
+      avatarFileName: request.file?.filename
     });
+
+    return response.json({ user })
 });
 
-usersRouter.put('/completeRegisterProvider', ensureAuthenticated, async (request, response, next) => {
+usersRouter.put('/completeRegisterFornecedor', ensureAuthenticated, async (request, response) => {
 
     response.json({ok: true});
 });
 
-usersRouter.get('/allUsers', ensureAuthenticated, async (request, response, next) => {
+usersRouter.get('/allUsers', ensureAuthenticated, async (request, response) => {
   const userRepository = getRepository(User);
 
   const type = request.user.type == 0 ? 1 : 0;
@@ -61,19 +67,19 @@ usersRouter.get('/allUsers', ensureAuthenticated, async (request, response, next
   return response.json(users);
 });
 
+usersRouter.get('/infoUser/:id', ensureAuthenticated, async (request, response) => {
+  const userRepository = getRepository(User);
+  const { id } = request.params;
 
-// usersRouter.patch('/avatar', ensureAuthenticated, upload.single('avatar'), async(request, response) => {
+  const user = await userRepository.findOne({
+    where: {id}
+  })
 
-//     const UpdateAvatar = new UpdateUserAvatarService();
+  if(!user){
+    throw new AppError('Usuário não encontrado!');
+  }
 
-//     const user: User = await UpdateAvatar.execute({
-//         user_id: request.user.id,
-//         avatarFileName: request.file.filename
-//     })
-
-//     delete user.password;
-
-//     return response.json(user);
-// });
+  return response.json(user);
+});
 
 export default usersRouter;
