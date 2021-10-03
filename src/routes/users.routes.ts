@@ -7,6 +7,7 @@ import { getRepository } from 'typeorm';
 import AppError from '../errors/AppError';
 import User from '../models/Users';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
+import UpdateAvatarUser from '../services/UpdateAvatarUser';
 
 const usersRouter = Router();
 const upload = multer(uploadConfig);
@@ -44,10 +45,21 @@ usersRouter.patch('/completeRegisterVarejista', ensureAuthenticated, upload.sing
       id: request.user.id,
       description,
       telephone,
-      avatarFileName: request.file?.filename
     });
 
     return response.json({ user })
+});
+
+usersRouter.patch('/updateAvatar', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
+
+  const updateUserInfoVarejista = new UpdateAvatarUser();
+
+  const user = await updateUserInfoVarejista.execute({
+    id: request.user.id,
+    avatarFileName: request.file?.filename
+  });
+
+  return response.json({ user })
 });
 
 usersRouter.put('/completeRegisterFornecedor', ensureAuthenticated, async (request, response) => {

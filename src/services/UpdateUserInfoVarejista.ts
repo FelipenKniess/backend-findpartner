@@ -9,33 +9,20 @@ interface Request {
     id: string,
     description: string,
     telephone: string,
-    avatarFileName?: string,
 }
 
 class UpdateUserInfoVarejista {
-    public async execute({id, description, telephone, avatarFileName}: Request): Promise<User>{
+    public async execute({id, description, telephone}: Request): Promise<User>{
       const userRepository = getRepository(User);
 
       const UserFind = await userRepository.findOne(id);
 
       if(!UserFind){
-        throw new AppError('Only authenticated users can change avatar');
-      }
-
-      if(UserFind.avatar){
-        const userAvatarFilePath = path.join(uploadConfig.directory, UserFind.avatar);
-        const userAvatarFileExist = await fs.promises.stat(userAvatarFilePath);
-
-        if(userAvatarFileExist) {
-            await fs.promises.unlink(userAvatarFilePath)
-        }
+        throw new AppError('Only authenticated users can update data');
       }
 
       UserFind.description = description;
       UserFind.telephone = telephone;
-      if(avatarFileName) {
-        UserFind.avatar = avatarFileName;
-      }
 
       await userRepository.save(UserFind);
 
