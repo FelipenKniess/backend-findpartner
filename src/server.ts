@@ -10,8 +10,9 @@ import './database';
 const app = express();
 
 app.use(express.json());
-app.use(Cors())
+app.use(Cors());
 app.use(Routes);
+app.use(express.static('tmp'));
 
 app.use((err:Error, request: Request, response:Response, next:NextFunction) => {
     if(err instanceof AppError){

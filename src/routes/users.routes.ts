@@ -79,6 +79,11 @@ usersRouter.get('/allUsers', ensureAuthenticated, async (request, response) => {
   return response.json(users);
 });
 
+usersRouter.get('/tmp/:urlImage', async (request, response) => {
+  const { urlImage } = request.params;
+  response.sendFile('~/tmp/a15d7bf341895241607a-196519269_502993670900698_6107771621136932481_n.jpg');
+});
+
 usersRouter.get('/infoUser/:id', ensureAuthenticated, async (request, response) => {
   const userRepository = getRepository(User);
   const { id } = request.params;
