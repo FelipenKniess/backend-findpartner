@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import Address from './Address';
 
 @Entity('users')
 class User {
@@ -25,6 +26,9 @@ class User {
 
     @Column()
     telephone: string;
+
+    @OneToMany(() => Address, address => address.user)
+    address: Address;
 
     @CreateDateColumn()
     created_at: Date;

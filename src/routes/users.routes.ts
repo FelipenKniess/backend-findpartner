@@ -36,8 +36,8 @@ usersRouter.post('/create', async (request, response) => {
     response.json(newUser);
 });
 
-usersRouter.patch('/completeRegisterVarejista', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
-    const {description, telephone} = request.body;
+usersRouter.patch('/completeRegister', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
+    const {description, telephone, city, uf, district, number, street} = request.body;
 
     const updateUserInfoVarejista = new UpdateUserInfoVarejista();
 
@@ -45,6 +45,11 @@ usersRouter.patch('/completeRegisterVarejista', ensureAuthenticated, upload.sing
       id: request.user.id,
       description,
       telephone,
+      city,
+      uf,
+      district,
+      number,
+      street
     });
 
     return response.json({ user })
@@ -62,15 +67,10 @@ usersRouter.patch('/updateAvatar', ensureAuthenticated, upload.single('avatar'),
   return response.json({ user })
 });
 
-usersRouter.put('/completeRegisterFornecedor', ensureAuthenticated, async (request, response) => {
-
-    response.json({ok: true});
-});
-
 usersRouter.get('/allUsers', ensureAuthenticated, async (request, response) => {
   const userRepository = getRepository(User);
 
-  const type = request.user.type == 0 ? 1 : 0;
+  const type = request.user.type === 1 ? 2 : 1;
 
   const users = await userRepository.find({
     where: {type}
@@ -79,17 +79,18 @@ usersRouter.get('/allUsers', ensureAuthenticated, async (request, response) => {
   return response.json(users);
 });
 
-usersRouter.get('/tmp/:urlImage', async (request, response) => {
-  const { urlImage } = request.params;
-  response.sendFile('~/tmp/a15d7bf341895241607a-196519269_502993670900698_6107771621136932481_n.jpg');
-});
-
 usersRouter.get('/infoUser/:id', ensureAuthenticated, async (request, response) => {
   const userRepository = getRepository(User);
   const { id } = request.params;
 
   const user = await userRepository.findOne({
-    where: {id}
+    where: {id},
+    join: {
+      alias: "users",
+      leftJoinAndSelect: {
+        address: "users.address"
+      }
+    }
   })
 
   if(!user){
