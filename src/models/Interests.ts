@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import User from './Users';
 
 @Entity('interests')
 class Interests {
@@ -7,6 +8,13 @@ class Interests {
 
     @Column()
     description: string;
+
+    @ManyToOne(() => User)
+    @JoinColumn({ name: 'user_id' })
+    user?: User;
+
+    @Column()
+    user_id: string;
 
     @CreateDateColumn()
     created_at: Date;
