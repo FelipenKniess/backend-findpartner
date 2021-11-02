@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import Address from './Address';
+import Interest from './Interests';
 
 @Entity('users')
 class User {
@@ -29,6 +30,9 @@ class User {
 
     @OneToMany(() => Address, address => address.user)
     address: Address;
+
+    @OneToMany(() => Interest, interest => interest.user)
+    interest: Interest;
 
     @CreateDateColumn()
     created_at: Date;

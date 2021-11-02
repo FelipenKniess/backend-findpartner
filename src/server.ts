@@ -3,11 +3,23 @@ import 'express-async-errors';
 import express, {Request, Response, NextFunction} from 'express';
 import AppError from './errors/AppError';
 import Cors from 'cors';
-
 import Routes from './routes';
 import './database';
 
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+io.on('connection', (socket: any) => {
+    console.log('[IO] Connection => Server has a new connection')
+    socket.on('sendMessage', (data: any) => {
+        console.log('[SOCKET] Chat.message => ', data)
+        // io.emit('chat.message', data)
+    })
+    socket.on('disconnect', () => {
+        console.log('[SOCKET] Disconnect => A connection was disconnected')
+    })
+})
 
 app.use(express.json());
 app.use(Cors());
@@ -30,6 +42,4 @@ app.use((err:Error, request: Request, response:Response, next:NextFunction) => {
     })
 });
 
-app.listen(3333, () => {
-  console.log('Server started on port 3333');
-})
+server.listen(3333)

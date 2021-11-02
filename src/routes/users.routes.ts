@@ -88,7 +88,8 @@ usersRouter.get('/infoUser/:id', ensureAuthenticated, async (request, response) 
     join: {
       alias: "users",
       leftJoinAndSelect: {
-        address: "users.address"
+        address: "users.address",
+        interest: "users.interest"
       }
     }
   })

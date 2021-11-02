@@ -1,26 +1,35 @@
 import { getRepository} from 'typeorm';
 import Interests from '../models/Interests';
+import AppError from '../errors/AppError';
 
 interface Request {
-    interests: Interests [];
+    interest: string;
     user_id: string
 }
 
 class CreateInterestsUser {
 
-    public async execute({ user_id, interests }: Request): Promise<any>{
+    public async execute({ user_id, interest }: Request): Promise<Interests>{
         const interestsRepository = getRepository(Interests);
 
-        const dataInsert = interests.map((data) => {
-            return {
+        const checkInterestExist = await interestsRepository.findOne({
+            where: {
                 user_id,
-                description: data.description
+                description:interest
             }
+        });
+
+        if(checkInterestExist) {
+            throw new AppError('Esse interesse já está cadastrado!');
+        }
+        const newInterest = interestsRepository.create({
+            description:interest,
+            user_id
         })
 
-        interestsRepository.insert(dataInsert);
+        await interestsRepository.save(newInterest);
 
-        return dataInsert;
+        return newInterest;
     }
 }
 

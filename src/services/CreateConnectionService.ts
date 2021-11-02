@@ -11,6 +11,10 @@ class CreateConnectionService {
     public async execute({user_interest_id, user_interested_id}: Request): Promise<Connection>{
         const connectionsRepository = getRepository(Connection);
 
+        if(user_interest_id === user_interested_id){
+          throw new AppError('Você não pode realizar conexões com você mesmo!');
+        }
+
         const alreadyExistConnection = await connectionsRepository.findOne({
           where: [
             {user_interest_id, user_interested_id, match: true},
