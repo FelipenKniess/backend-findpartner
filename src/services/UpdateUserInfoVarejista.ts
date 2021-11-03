@@ -5,6 +5,7 @@ import AppError from "../errors/AppError";
 
 interface Request {
     id: string,
+    name: string,
     description: string,
     telephone: string,
     city: string,
@@ -15,7 +16,7 @@ interface Request {
 }
 
 class UpdateUserInfoVarejista {
-    public async execute({id, description, telephone, city, uf, district, number, street}: Request): Promise<User>{
+    public async execute({id, name, description, telephone, city, uf, district, number, street}: Request): Promise<User>{
       const userRepository = getRepository(User);
       const addressRepository = getRepository(Address);
 
@@ -42,8 +43,9 @@ class UpdateUserInfoVarejista {
           latitude: ''
       }
 
+      // const {} = this.getCoordenates(completeAddress);
+
       if(!AddressFind){
-        // const {} = this.getCoordenates(completeAddress);
 
         const newAddress = addressRepository.create(completeAddress)
 
@@ -55,12 +57,11 @@ class UpdateUserInfoVarejista {
         AddressFind.number = number;
         AddressFind.street = street;
 
-        this.getCoordenates(completeAddress);
-
         await addressRepository.save(AddressFind);
       }
 
       UserFind.description = description;
+      UserFind.name = name;
       UserFind.telephone = telephone;
 
       await userRepository.save(UserFind);

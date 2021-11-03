@@ -37,12 +37,13 @@ usersRouter.post('/create', async (request, response) => {
 });
 
 usersRouter.patch('/completeRegister', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
-    const {description, telephone, city, uf, district, number, street} = request.body;
+    const {name, description, telephone, city, uf, district, number, street} = request.body;
 
     const updateUserInfoVarejista = new UpdateUserInfoVarejista();
 
     const user = await updateUserInfoVarejista.execute({
       id: request.user.id,
+      name,
       description,
       telephone,
       city,

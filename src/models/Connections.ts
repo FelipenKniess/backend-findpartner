@@ -13,8 +13,8 @@ class Connections {
     @JoinColumn({ name: 'user_interest_id' })
     user_interest: User;
 
-        @Column()
-        user_interested_id: string;
+    @Column()
+    user_interested_id: string;
 
     @ManyToOne(() => User)
     @JoinColumn({ name: 'user_interested_id' })

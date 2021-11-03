@@ -20,7 +20,7 @@ connectionsRouter.post('/', ensureAuthenticated, async (request, response) => {
 
 });
 
-connectionsRouter.get('/', ensureAuthenticated, async (request, response) => {
+connectionsRouter.get('/matchs', ensureAuthenticated, async (request, response) => {
   const connectionsRepository = getRepository(Connection);
 
   const connectionsUser = await connectionsRepository.find({
@@ -32,10 +32,26 @@ connectionsRouter.get('/', ensureAuthenticated, async (request, response) => {
         user_interested_id:request.user.id,
         match: true
       }
-    ]
+    ],
+    join: {
+      alias: "connections",
+      leftJoinAndSelect: {
+        user_interest: "connections.user_interest",
+        user_interested: "connections.user_interested",
+      }
+    }
   });
 
-  response.json(connectionsUser);
+  const connections = connectionsUser.map((connection) => {
+    const user = connection.user_interest_id === request.user.id
+      ? connection.user_interested : connection.user_interest;
+    return {
+      id: connection.id,
+      user
+    }
+  });
+
+  response.json(connections);
 })
 
 export default connectionsRouter;
