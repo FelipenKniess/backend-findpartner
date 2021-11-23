@@ -36,7 +36,7 @@ usersRouter.post('/create', async (request, response) => {
     response.json(newUser);
 });
 
-usersRouter.patch('/completeRegister', ensureAuthenticated, upload.single('avatar'), async (request, response) => {
+usersRouter.patch('/completeRegister', ensureAuthenticated, async (request, response) => {
     const {name, description, telephone, city, uf, district, number, street} = request.body;
 
     const updateUserInfoVarejista = new UpdateUserInfoVarejista();
@@ -90,7 +90,8 @@ usersRouter.get('/infoUser/:id', ensureAuthenticated, async (request, response) 
       alias: "users",
       leftJoinAndSelect: {
         address: "users.address",
-        interest: "users.interest"
+        interest: "users.interest",
+        products: "users.products"
       }
     }
   })

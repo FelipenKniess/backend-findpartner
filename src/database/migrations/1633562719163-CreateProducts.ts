@@ -17,7 +17,6 @@ export class CreateProducts1633562719163 implements MigrationInterface {
                     {
                         name: 'name',
                         type: 'varchar',
-                        isUnique: true
                     },
                     {
                         name: 'price',
@@ -26,6 +25,7 @@ export class CreateProducts1633562719163 implements MigrationInterface {
                     {
                         name: 'image_product',
                         type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'user_id',
