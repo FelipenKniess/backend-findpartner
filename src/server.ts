@@ -30,4 +30,6 @@ app.use((err:Error, request: Request, response:Response, next:NextFunction) => {
     })
 });
 
-server.listen(3333)
+server.listen(3333, () => {
+    return 'server start on port 3333';
+})

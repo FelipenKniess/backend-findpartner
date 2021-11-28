@@ -3,9 +3,10 @@ import multer from 'multer';
 import uploadConfig from '../config/upload';
 import CreateUserService from '../services/CreateUserService';
 import UpdateUserInfoVarejista from '../services/UpdateUserInfoVarejista';
-import { getRepository } from 'typeorm';
+import { getRepository, getManager } from 'typeorm';
 import AppError from '../errors/AppError';
 import User from '../models/Users';
+import Interests from '../models/Interests';
 import ensureAuthenticated from '../middlewares/ensureAuthenticated';
 import UpdateAvatarUser from '../services/UpdateAvatarUser';
 
@@ -68,14 +69,52 @@ usersRouter.patch('/updateAvatar', ensureAuthenticated, upload.single('avatar'),
   return response.json({ user })
 });
 
-usersRouter.get('/allUsers', ensureAuthenticated, async (request, response) => {
-  const userRepository = getRepository(User);
+usersRouter.get('/similarInterests', ensureAuthenticated, async (request, response) => {
+  const manager = getManager();
+  const interestsRepository = getRepository(Interests);
 
   const type = request.user.type === 1 ? 2 : 1;
 
-  const users = await userRepository.find({
-    where: {type}
-  })
+  const interestsUser = await interestsRepository.find({
+    where: {user_id: request.user.id}
+  });
+
+  if(interestsUser.length > 0) {
+    const descriptionInterests = interestsUser.map(interest => `'${interest.description}'`);
+    const formatDescriptions = descriptionInterests.join(',');
+    const users = await manager.query(`
+      select users.id, users.telephone, users.name, users.avatar from users
+      left join interests on users.id = interests.user_id
+      where interests.user_id != '${request.user.id}' and type = ${type} and interests.description in (${formatDescriptions})
+      group by users.id
+    `);
+    return response.json(users);
+  }
+
+  return response.json([]);
+});
+
+usersRouter.get('/filter', ensureAuthenticated, async (request, response) => {
+  const manager = getManager();
+  const {name, interest, product} = request.query;
+  const type = request.user.type === 1 ? 2 : 1;
+
+  if(!name && !interest && !product){
+    const users = await manager.query(`
+      select users.id, users.telephone, users.name, users.avatar from users
+      where users.type = ${type}
+    `);
+    return response.json(users);
+  }
+
+  const users = await manager.query(`
+    select users.id, users.telephone, users.name, users.avatar from users
+    left join interests on users.id = interests.user_id
+    left join products on users.id = products.user_id
+    where interests.user_id != '${request.user.id}' and users.type = ${type} and
+    (users.name LIKE '${name || ''}%' OR interests.description LIKE '${interest || ''}%' OR products.name LIKE '${product || ''}%')
+    group by users.id
+  `);
 
   return response.json(users);
 });
