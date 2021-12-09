@@ -54,4 +54,32 @@ connectionsRouter.get('/matchs', ensureAuthenticated, async (request, response) 
   response.json(connections);
 })
 
+connectionsRouter.get('/interests', ensureAuthenticated, async (request, response) => {
+  const connectionsRepository = getRepository(Connection);
+
+  const usersInterest = await connectionsRepository.find({
+    where:[{
+        user_interested_id: request.user.id,
+        match: false
+      },
+    ],
+    join: {
+      alias: "connections",
+      leftJoinAndSelect: {
+        user_interest: "connections.user_interest",
+        user_interested: "connections.user_interested",
+      }
+    }
+  });
+
+  const users = usersInterest.map((interest) => {
+    return {
+      id: interest.id,
+      user: interest.user_interest
+    }
+  });
+
+  response.json(users);
+})
+
 export default connectionsRouter;

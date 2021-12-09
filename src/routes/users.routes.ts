@@ -82,12 +82,13 @@ usersRouter.get('/similarInterests', ensureAuthenticated, async (request, respon
   if(interestsUser.length > 0) {
     const descriptionInterests = interestsUser.map(interest => `'${interest.description}'`);
     const formatDescriptions = descriptionInterests.join(',');
-    const users = await manager.query(`
-      select users.id, users.telephone, users.name, users.avatar from users
-      left join interests on users.id = interests.user_id
-      where interests.user_id != '${request.user.id}' and type = ${type} and interests.description in (${formatDescriptions})
-      group by users.id
-    `);
+
+    const query = `select users.id, users.telephone, users.name, users.avatar from users
+    left join interests on users.id = interests.user_id
+    where interests.user_id != '${request.user.id}' and type = ${type} and interests.description in (${formatDescriptions})
+    group by users.id`;
+
+    const users = await manager.query(query);
     return response.json(users);
   }
 
@@ -98,23 +99,23 @@ usersRouter.get('/filter', ensureAuthenticated, async (request, response) => {
   const manager = getManager();
   const {name, interest, product} = request.query;
   const type = request.user.type === 1 ? 2 : 1;
-
   if(!name && !interest && !product){
-    const users = await manager.query(`
-      select users.id, users.telephone, users.name, users.avatar from users
-      where users.type = ${type}
-    `);
+    let query = `select users.id, users.telephone, users.name, users.avatar from users
+    where users.type = ${type}`;
+    const users = await manager.query(query);
     return response.json(users);
   }
 
-  const users = await manager.query(`
+  let query = `
     select users.id, users.telephone, users.name, users.avatar from users
     left join interests on users.id = interests.user_id
     left join products on users.id = products.user_id
-    where interests.user_id != '${request.user.id}' and users.type = ${type} and
-    (users.name LIKE '${name || ''}%' OR interests.description LIKE '${interest || ''}%' OR products.name LIKE '${product || ''}%')
+    where users.id != '${request.user.id}' and users.type = ${type} and
+    (users.name = '${name || ''}' OR interests.description = '${interest || ''}' OR products.name = '${product || ''}')
     group by users.id
-  `);
+  `;
+  console.log(query);
+  const users = await manager.query(query);
 
   return response.json(users);
 });
